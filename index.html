@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digital Letter - Sabar Ya</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Cormorant+Garamond:wght@300;400;500;600&family=Great+Vibes&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #D4A574;
+            --secondary: #F5E6D3;
+            --accent: #8B6F47;
+            --dark: #2C2416;
+            --light: #FEF8F3;
+            --rose: #E8B4B8;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            font-family: 'Cormorant Garamond', serif;
+            background: linear-gradient(135deg, var(--light) 0%, var(--secondary) 100%);
+            overflow: hidden;
+            color: var(--dark);
+        }
+
+        /* Floating decorative elements */
+        .floating-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .floating-element {
+            position: absolute;
+            opacity: 0.3;
+            animation: float 6s ease-in-out infinite;
+            font-size: 2rem;
+        }
+
+        .heart { animation-delay: 0s; top: 10%; left: 10%; }
+        .star { animation-delay: 2s; top: 20%; right: 15%; }
+        .heart2 { animation-delay: 1s; bottom: 15%; right: 10%; }
+        .star2 { animation-delay: 3s; bottom: 20%; left: 15%; }
+        .heart3 { animation-delay: 4s; top: 50%; left: 5%; }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(20px); }
+        }
+
+        /* Container */
+        .main-container {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Countdown Page */
+        #countdown-page {
+            text-align: center;
+            padding: 2rem;
+            opacity: 1;
+            transition: opacity 0.8s ease;
+            animation: fadeIn 1s ease;
+        }
+
+        #countdown-page.hidden {
+            display: none;
+        }
+
+        .countdown-content {
+            background: rgba(255, 248, 243, 0.95);
+            border: 2px solid var(--primary);
+            border-radius: 20px;
+            padding: 4rem 2rem;
+            max-width: 600px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .countdown-content h1 {
+            font-family: 'Great Vibes', cursive;
+            font-size: 3.5rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+            animation: fadeInDown 1s ease;
+        }
+
+        .countdown-content p {
+            font-size: 1.5rem;
+            color: var(--accent);
+            font-weight: 300;
+            margin-bottom: 2rem;
+            letter-spacing: 1px;
+        }
+
+        .countdown-timer {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .time-unit {
+            background: var(--primary);
+            color: var(--light);
+            padding: 1.5rem;
+            border-radius: 10px;
+            font-size: 1.8rem;
+            font-weight: 600;
+        }
+
+        .time-unit-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-top: 0.5rem;
+        }
+
+        @media (max-width: 600px) {
+            .countdown-content h1 {
+                font-size: 2.5rem;
+            }
+            .countdown-content p {
+                font-size: 1.1rem;
+            }
+            .countdown-timer {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 0.5rem;
+            }
+            .time-unit {
+                padding: 1rem;
+                font-size: 1.3rem;
+            }
+        }
+
+        /* Letter Pages */
+        #letter-container {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.8s ease;
+            padding: 2rem;
+        }
+
+        #letter-container.active {
+            opacity: 1;
+        }
+
+        .letter-page {
+            background: rgba(255, 248, 243, 0.98);
+            border: 2px solid var(--primary);
+            border-radius: 15px;
+            padding: 3rem;
+            max-width: 700px;
+            height: auto;
+            max-height: 85vh;
+            overflow-y: auto;
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.15);
+            position: absolute;
+            opacity: 0;
+            transition: opacity 0.8s ease;
+            animation: fadeIn 0.8s ease;
+        }
+
+        .letter-page.active {
+            opacity: 1;
+            position: relative;
+        }
+
+        .letter-page h2 {
+            font-family: 'Great Vibes', cursive;
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .letter-page p {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: var(--dark);
+            margin-bottom: 1.5rem;
+            text-align: justify;
+        }
+
+        .letter-page .signature {
+            font-family: 'Great Vibes', cursive;
+            font-size: 2rem;
+            color: var(--primary);
+            margin-top: 2rem;
+            text-align: right;
+        }
+
+        /* Navigation */
+        .navigation {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 1.5rem;
+            z-index: 20;
+        }
+
+        .nav-btn {
+            background: var(--primary);
+            color: var(--light);
+            border: none;
+            padding: 0.8rem 2rem;
+            border-radius: 25px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Cormorant Garamond', serif;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        .nav-btn:hover {
+            background: var(--accent);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(212, 165, 116, 0.4);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .page-indicator {
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            font-size: 1rem;
+            color: var(--accent);
+            font-weight: 600;
+            z-index: 20;
+        }
+
+        /* Music Player */
+        .music-player {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: var(--primary);
+            color: var(--light);
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 20;
+            box-shadow: 0 5px 20px rgba(212, 165, 116, 0.3);
+        }
+
+        .music-player:hover {
+            transform: scale(1.1);
+            box-shadow: 0 8px 25px rgba(212, 165, 116, 0.5);
+        }
+
+        .music-player.playing::after {
+            content: '⏸';
+            font-size: 1.5rem;
+        }
+
+        .music-player:not(.playing)::after {
+            content: '▶';
+            font-size: 1.5rem;
+        }
+
+        audio {
+            display: none;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Scrollbar */
+        .letter-page::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .letter-page::-webkit-scrollbar-track {
+            background: var(--secondary);
+            border-radius: 10px;
+        }
+
+        .letter-page::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 10px;
+        }
+
+        .letter-page::-webkit-scrollbar-thumb:hover {
+            background: var(--accent);
+        }
+
+        @media (max-width: 768px) {
+            .letter-page {
+                padding: 2rem;
+                max-height: 75vh;
+            }
+
+            .letter-page h2 {
+                font-size: 2rem;
+            }
+
+            .letter-page p {
+                font-size: 1rem;
+            }
+
+            .navigation {
+                bottom: 1.5rem;
+                gap: 1rem;
+            }
+
+            .nav-btn {
+                padding: 0.7rem 1.5rem;
+                font-size: 0.9rem;
+            }
+
+            .page-indicator {
+                top: 1.5rem;
+                right: 1.5rem;
+                font-size: 0.9rem;
+            }
+
+            .music-player {
+                bottom: 1.5rem;
+                right: 1.5rem;
+                width: 50px;
+                height: 50px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Floating Decorative Elements -->
+    <div class="floating-container">
+        <div class="floating-element heart">❤️</div>
+        <div class="floating-element star">✨</div>
+        <div class="floating-element heart2">❤️</div>
+        <div class="floating-element star2">✨</div>
+        <div class="floating-element heart3">❤️</div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="main-container">
+        <!-- Countdown Page -->
+        <div id="countdown-page">
+            <div class="countdown-content">
+                <h1>Sabar yak...</h1>
+                <p>Suratnya belum siap dibuka!</p>
+                <div class="countdown-timer">
+                    <div class="time-unit">
+                        <div id="days">0</div>
+                        <div class="time-unit-label">Hari</div>
+                    </div>
+                    <div class="time-unit">
+                        <div id="hours">0</div>
+                        <div class="time-unit-label">Jam</div>
+                    </div>
+                    <div class="time-unit">
+                        <div id="minutes">0</div>
+                        <div class="time-unit-label">Menit</div>
+                    </div>
+                    <div class="time-unit">
+                        <div id="seconds">0</div>
+                        <div class="time-unit-label">Detik</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Letter Container -->
+        <div id="letter-container">
+            <!-- Page 1: Cover -->
+            <div class="letter-page active" data-page="1">
+                <h2>Untuk Manusia,orang,mahasiswa semester 1</h2>
+                <p style="text-align: center; font-family: 'Great Vibes', cursive; font-size: 1.8rem; margin-top: 3rem;">
+                    A Special Letter
+                </p>
+                <p style="text-align: center; margin-top: 3rem; color: var(--accent); font-size: 1.1rem;">
+                    Dibuat dengan penuh, penuh apa ya, anuan lah pokoknye
+                </p>
+                <p style="text-align: center; margin-top: 4rem; font-size: 1rem; color: var(--accent);">
+                    📝 Tekan "Next" untuk melanjutkan
+                </p>
+            </div>
+
+            <!-- Page 2: First Part -->
+            <div class="letter-page" data-page="2">
+                <h2>Bagian Pertama</h2>
+                <p>
+                    Haiii, apa kabar hari ini? Udah mau pergantian tahun aja ya. Salsa, sebelum tahun 2025 benar-benar berakhir, I just want to thank you for being good friend to me, seriously thank you for being real. Maksud aku teman kuliah yang aku kenal yang bisa sampai membuat aku berbagi cerita masa lalu, masa kini, dan masa depan. Jujur aku ngga tau kenapa gitu. Makasih juga udah percaya sama aku untuk bercerita. 
+                </p>
+                <p>
+                    And maaf semisal belum bisa jadi pendengar yang baik atau teman yang baik buat lu. Mungkin gw nyusahin lu di waktu yang bener-bener ga tepat? Atau menganggu kamu disetiap waktu? Wkwkk. Maaf banget juga mungkin omongan aku menyakiti hati, nggak ngeh kalo kamu mungkin ga lagi kondisi bagus(?) butuh sendiri atau sebagainya, maaf kalo lu kesal atau kecewa tapi gw ga punya kalimat yang bisa buat nenangin diri lu. Maaf kalau ada momen ketika kamu cerita tapi aku malah kikuk karena takut salah respon, tapi seriusan aku selalu coba berusaha buat jadi tempat aman🔐. Aku selalu berusaha mencoba ngerti kamu, aku selalu simpan semua ceritamu baik-baik. 
+                </p>
+            </div>
+
+            <!-- Page 3: Second Part -->
+            <div class="letter-page" data-page="3">
+                <h2>Bagian Kedua</h2>
+                <p>
+                    Emmm lalu aku cuman mau kasih tau apa yang ada dipikiran aku sih ini karena sebenernya mengganggu gitu. Kalo semisal kamu suatu ketika ngerasa risih tolong bilang ya... Gapapa asli, mungkin aku terlalu gimana gitu. Soalnya kalo ga dibilangin ga akan berhenti... Ga cuman itu si, tapi intinya sama aku jangan ga enakan... minta tolong juga jangan sungkan.
+                </p>
+                <p>
+                    Gitu aja sih, terlalu lebay juga wkwkwk, udah intinya thanks sudah jadi temen gue di beberapa bulan ini, belum lama emang tapi udah banyak bertukar cerita. And ya kamu salah satu orang yang aku anggap profesional banget (cocok jadi role model xixixi). Makasih sudah menjadi seseorang yg suka menghargai manusia lain juga, makasih atas effort kamu di 2025 ini. Semoga kamu selalu happy😸 dan dikelilingi teman-teman yang baik🫂. Salsa, semoga di 2026 semuanya better ya😎 intinya semua yang terbaik dah pren:D
+            </div>
+
+            <!-- Page 4: Closing -->
+            <div class="letter-page" data-page="4">
+                <h2>Tambahan</h2>
+                <p>
+                   Tadinya aku mau ajak kamu ke beberapa tempat, karena belum pernah juga kan? Tapi kalo dipikir takutnya itu cuman keinginan gw aja dan akan mengganggu your life karna tamkut ga enakan. So, km bisa beritahu kalo mau atau senggang(?) atau bisa juga kita bisa lakuin itu bareng yg lain sautu hati nanti.
+                </p>
+                <p>
+                    sehat selalu yeah, bye
+                </p>
+                <p style="margin-top: 3rem;">
+                    Assalamualaikum (emot tidur)
+                </p>
+                <div class="signature">Dari sang Virgo</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation Buttons -->
+    <div class="navigation">
+        <button class="nav-btn" id="backBtn" disabled>← Kembali</button>
+        <button class="nav-btn" id="nextBtn">Lanjut →</button>
+    </div>
+
+    <!-- Page Indicator -->
+    <div class="page-indicator">
+        <span id="pageNumber">1</span> / 4
+    </div>
+
+    <!-- Music Player -->
+    <div class="music-player" id="musicPlayer"></div>
+    <audio id="letterMusic" loop>
+        <!-- Ganti URL berikut dengan link ke file MP3 kamu -->
+        <source src="https://your-music-url.mp3" type="audio/mpeg">
+    </audio>
+
+    <script>
+        // ========== COUNTDOWN TIMER ==========
+        const targetDate = new Date('2025-12-31T19:00:00').getTime();
+        const countdownPage = document.getElementById('countdown-page');
+        const letterContainer = document.getElementById('letter-container');
+
+        function updateCountdown() {
+            const now = new Date().getTime();
+            const timeLeft = targetDate - now;
+
+            if (timeLeft > 0) {
+                const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+
+                document.getElementById('days').textContent = days.toString().padStart(2, '0');
+                document.getElementById('hours').textContent = hours.toString().padStart(2, '0');
+                document.getElementById('minutes').textContent = minutes.toString().padStart(2, '0');
+                document.getElementById('seconds').textContent = seconds.toString().padStart(2, '0');
+            } else {
+                // Waktu sudah tiba, sembunyikan countdown dan tampilkan surat
+                countdownPage.classList.add('hidden');
+                letterContainer.classList.add('active');
+            }
+        }
+
+        // Cek waktu saat halaman dibuka
+        updateCountdown();
+        // Update countdown setiap detik
+        setInterval(updateCountdown, 1000);
+
+        // ========== LETTER NAVIGATION ==========
+        let currentPage = 1;
+        const totalPages = 4;
+        const nextBtn = document.getElementById('nextBtn');
+        const backBtn = document.getElementById('backBtn');
+        const pageNumber = document.getElementById('pageNumber');
+        const letterPages = document.querySelectorAll('.letter-page');
+
+        function updatePage() {
+            // Hapus class active dari semua halaman
+            letterPages.forEach(page => page.classList.remove('active'));
+            
+            // Tambahkan class active ke halaman saat ini
+            document.querySelector(`[data-page="${currentPage}"]`).classList.add('active');
+            
+            // Update page indicator
+            pageNumber.textContent = currentPage;
+            
+            // Update tombol
+            backBtn.disabled = currentPage === 1;
+            nextBtn.disabled = currentPage === totalPages;
+        }
+
+        nextBtn.addEventListener('click', () => {
+            if (currentPage < totalPages) {
+                currentPage++;
+                updatePage();
+            }
+        });
+
+        backBtn.addEventListener('click', () => {
+            if (currentPage > 1) {
+                currentPage--;
+                updatePage();
+            }
+        });
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (letterContainer.classList.contains('active')) {
+                if (e.key === 'ArrowRight') nextBtn.click();
+                if (e.key === 'ArrowLeft') backBtn.click();
+            }
+        });
+
+        // ========== MUSIC PLAYER ==========
+        const musicPlayer = document.getElementById('musicPlayer');
+        const letterMusic = document.getElementById('letterMusic');
+
+        musicPlayer.addEventListener('click', () => {
+            if (letterMusic.paused) {
+                letterMusic.play();
+                musicPlayer.classList.add('playing');
+            } else {
+                letterMusic.pause();
+                musicPlayer.classList.remove('playing');
+            }
+        });
+
+        // Initialize
+        updatePage();
+    </script>
+</body>
+</html>
